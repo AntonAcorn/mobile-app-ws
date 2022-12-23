@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -55,5 +56,51 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException(email);
         }
         return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), new ArrayList<>());
+    }
+
+    @Override
+    public UserDto getUser(String email) {
+        UserEntity userEntity = userRepository.findByEmail(email);
+        if(userEntity == null){
+            throw new UsernameNotFoundException(email);
+        }
+        UserDto returnValue = new UserDto();
+        BeanUtils.copyProperties(userEntity, returnValue);
+        return returnValue;
+    }
+
+    @Override
+    public UserDto getUserByUserId(String userId) {
+        return null;
+    }
+
+    @Override
+    public UserDto updateUser(String userId, UserDto user) {
+        return null;
+    }
+
+    @Override
+    public void deleteUser(String userId) {
+
+    }
+
+    @Override
+    public List<UserDto> getUsers(int page, int limit) {
+        return null;
+    }
+
+    @Override
+    public boolean verifyEmailToken(String token) {
+        return false;
+    }
+
+    @Override
+    public boolean requestPasswordReset(String email) {
+        return false;
+    }
+
+    @Override
+    public boolean resetPassword(String token, String password) {
+        return false;
     }
 }
