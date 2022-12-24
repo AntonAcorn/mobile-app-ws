@@ -1,6 +1,10 @@
 package com.acorn.mobileappws.security;
 
 import com.acorn.mobileappws.SpringApplicationContext;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 
 public class SecurityConstants {
     public static final long EXPIRATION_TIME = 864000000; // 10 days
@@ -14,6 +18,7 @@ public class SecurityConstants {
     public static final String H2_CONSOLE = "/h2-console/**";
     public static final String TOKEN_SECRET = "jf9i4jgu83nfl0";
 
+    //достаем токен из application properties
     public static String getTokenSecret()
     {
         AppProperties appProperties = (AppProperties) SpringApplicationContext.getBean("AppProperties");

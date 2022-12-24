@@ -49,6 +49,10 @@ public class UserServiceImpl implements UserService {
         return returnValue;
     }
 
+
+    //связываем spring security, чтобы он забирал userdetails из БД
+    //если спрингу нужно вытащить данные с БД, нам не нужно будет это указывать явно благодаря этому методу
+    //например, в фильтрах
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findByEmail(email);

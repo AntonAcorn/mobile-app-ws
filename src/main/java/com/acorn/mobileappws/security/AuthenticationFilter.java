@@ -7,12 +7,10 @@ import com.acorn.mobileappws.shared.dto.UserDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -25,10 +23,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-
+    //класс из Security Spring
    private final AuthenticationManager authenticationManager;
 
-    private String contentType;
 
     public AuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
@@ -38,9 +35,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
         try {
-
-            contentType = req.getHeader("Accept");
-
+            //из json в pojo
             UserLoginRequestModel creds = new ObjectMapper()
                     .readValue(req.getInputStream(), UserLoginRequestModel.class);
 
@@ -56,6 +51,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         }
     }
 
+    //Выполняется только если успешно прошел attemptAuthentication
     @Override
     protected void successfulAuthentication(HttpServletRequest req,
                                             HttpServletResponse res,
@@ -69,6 +65,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret() )
                 .compact();
+
+        //Если у класса нет аннотаций спринга внедрить бин можно следующим образом без аннотаций
         UserService userService = (UserService)SpringApplicationContext.getBean("userServiceImpl");
         UserDto  userDto = userService.getUser(userName);
 
