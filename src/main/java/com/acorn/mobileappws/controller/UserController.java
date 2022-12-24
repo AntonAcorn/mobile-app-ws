@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.UnknownServiceException;
+
 @RestController
 @RequestMapping("users")//http://localhost:8080/users
 public class UserController {
@@ -35,7 +37,7 @@ public class UserController {
         UserRest returnValue = new UserRest();
 
         if(userDetails.getFirstName().isEmpty()){
-            throw new Exception(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
+            throw new UnknownServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
 
         UserDto userDto = new UserDto();
