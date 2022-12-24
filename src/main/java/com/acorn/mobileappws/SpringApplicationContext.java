@@ -3,7 +3,7 @@ package com.acorn.mobileappws;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
+//не забыть внедрить его в главный класс
 public class SpringApplicationContext implements ApplicationContextAware {
 	private static ApplicationContext CONTEXT;
 

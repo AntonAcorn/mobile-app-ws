@@ -18,9 +18,12 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping
-    public String getUser(){
-        return "getUser was called";
+    @GetMapping("/{id}")
+    public UserRest getUser(@PathVariable String id){
+        UserRest userToReturn = new UserRest();
+        UserDto userDto = userService.getUserByUserId(id);
+        BeanUtils.copyProperties(userDto, userToReturn);
+        return userToReturn;
     }
 
     @PostMapping
