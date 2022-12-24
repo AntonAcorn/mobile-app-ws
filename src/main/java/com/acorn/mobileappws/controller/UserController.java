@@ -36,7 +36,7 @@ public class UserController {
 
         UserRest returnValue = new UserRest();
 
-        if(userDetails.getFirstName().isEmpty()){
+        if(userDetails.getLastName().isEmpty()){
             throw new UnknownServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
 
