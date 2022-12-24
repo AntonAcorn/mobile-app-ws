@@ -1,6 +1,7 @@
 package com.acorn.mobileappws.controller;
 
 import com.acorn.mobileappws.request.UserDetailsRequestModel;
+import com.acorn.mobileappws.response.ErrorMessages;
 import com.acorn.mobileappws.response.UserRest;
 import com.acorn.mobileappws.service.UserService;
 import com.acorn.mobileappws.shared.dto.UserDto;
@@ -27,9 +28,15 @@ public class UserController {
         return userToReturn;
     }
 
-    @PostMapping
-    public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails){
+    @PostMapping(consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) throws Exception {
+
         UserRest returnValue = new UserRest();
+
+        if(userDetails.getFirstName().isEmpty()){
+            throw new Exception(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
+        }
 
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userDetails, userDto);
