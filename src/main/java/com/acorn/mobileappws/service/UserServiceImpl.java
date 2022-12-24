@@ -1,6 +1,8 @@
 package com.acorn.mobileappws.service;
 
 import com.acorn.mobileappws.entity.UserEntity;
+import com.acorn.mobileappws.exceptions.UserServiceException;
+import com.acorn.mobileappws.response.ErrorMessages;
 import com.acorn.mobileappws.shared.Utils;
 import com.acorn.mobileappws.shared.dto.UserDto;
 import com.acorn.mobileappws.repository.UserRepository;
@@ -32,7 +34,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto createUser(UserDto user) {
 
-        if(userRepository.findByEmail(user.getEmail()) != null) throw new RuntimeException("Record already exists");
+        if (userRepository.findByEmail(user.getEmail()) != null) throw new RuntimeException("Record already exists");
 
         UserEntity userEntity = new UserEntity();
         BeanUtils.copyProperties(user, userEntity);
@@ -56,7 +58,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findByEmail(email);
-        if(userEntity == null){
+        if (userEntity == null) {
             throw new UsernameNotFoundException(email);
         }
         return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), new ArrayList<>());
@@ -65,7 +67,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUser(String email) {
         UserEntity userEntity = userRepository.findByEmail(email);
-        if(userEntity == null){
+        if (userEntity == null) {
             throw new UsernameNotFoundException(email);
         }
         UserDto returnValue = new UserDto();
@@ -77,7 +79,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserByUserId(String userId) {
         UserDto userToReturn = new UserDto();
         UserEntity userEntity = userRepository.findByUserId(userId);
-        if(userEntity == null) throw new UsernameNotFoundException(userId);
+        if (userEntity == null) throw new UsernameNotFoundException(userId);
 
         BeanUtils.copyProperties(userEntity, userToReturn);
 
@@ -86,31 +88,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(String userId, UserDto user) {
-        return null;
-    }
+        UserDto usertoReturn = new UserDto();
+        UserEntity userEntity = userRepository.findByUserId(userId);
 
-    @Override
-    public void deleteUser(String userId) {
+        if (userEntity == null){
+            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+        }else{
+            userEntity.setFirstName(user.getFirstName());
+            userEntity.setLastName(user.getLastName());
 
-    }
-
-    @Override
-    public List<UserDto> getUsers(int page, int limit) {
-        return null;
-    }
-
-    @Override
-    public boolean verifyEmailToken(String token) {
-        return false;
-    }
-
-    @Override
-    public boolean requestPasswordReset(String email) {
-        return false;
-    }
-
-    @Override
-    public boolean resetPassword(String token, String password) {
-        return false;
+            UserEntity  updatedUserDetails = userRepository.save(userEntity);
+            BeanUtils.copyProperties(updatedUserDetails, usertoReturn);
+        }
+            return usertoReturn;
     }
 }

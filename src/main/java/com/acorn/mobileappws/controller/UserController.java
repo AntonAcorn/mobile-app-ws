@@ -8,6 +8,7 @@ import com.acorn.mobileappws.shared.dto.UserDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.UnknownServiceException;
@@ -48,9 +49,18 @@ public class UserController {
         return returnValue;
     }
 
-    @PutMapping
-    public String updateUser(){
-        return "updateUser was called";
+    @PutMapping(path = "/{id}", consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails){
+        UserRest userToReturn = new UserRest();
+
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(userDetails, userDto);
+
+        UserDto updatedUser = userService.updateUser(id, userDto);
+        BeanUtils.copyProperties(updatedUser,userToReturn);
+
+        return userToReturn;
     }
 
     @DeleteMapping
