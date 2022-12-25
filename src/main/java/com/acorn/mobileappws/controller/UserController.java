@@ -1,17 +1,17 @@
 package com.acorn.mobileappws.controller;
 
 import com.acorn.mobileappws.request.UserDetailsRequestModel;
-import com.acorn.mobileappws.response.ErrorMessages;
-import com.acorn.mobileappws.response.UserRest;
+import com.acorn.mobileappws.response.*;
 import com.acorn.mobileappws.service.UserService;
 import com.acorn.mobileappws.shared.dto.UserDto;
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.net.UnknownServiceException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("users")//http://localhost:8080/users
@@ -63,8 +63,26 @@ public class UserController {
         return userToReturn;
     }
 
-    @DeleteMapping
-    public String deleteUser(){
-        return "deleteUser was called";
+    @DeleteMapping(path = "/{id}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public OperationStatusModel deleteUser(@PathVariable String id){
+        OperationStatusModel returnValue = new OperationStatusModel();
+        returnValue.setOperationName(RequestOperationName.DELETE.name());
+        userService.deleteUser(id);
+        returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        return returnValue;
+    }
+
+    @GetMapping
+    public List<UserRest> getAllUsers(@RequestParam(value = "page", defaultValue = "1") int page,
+                                      @RequestParam(value = "limit", defaultValue = "25") int limit){
+        List<UserRest> usersToReturn = new ArrayList<>();
+        List <UserDto> users = userService.getUsers(page, limit);
+        for (UserDto user: users
+             ) {
+            UserRest userRest = new UserRest();
+            BeanUtils.copyProperties(user, userRest);
+            usersToReturn.add(userRest);
+        }
+        return usersToReturn;
     }
 }

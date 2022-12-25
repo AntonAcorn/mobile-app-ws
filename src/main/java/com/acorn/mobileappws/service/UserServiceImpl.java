@@ -8,6 +8,9 @@ import com.acorn.mobileappws.shared.dto.UserDto;
 import com.acorn.mobileappws.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -79,7 +82,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserByUserId(String userId) {
         UserDto userToReturn = new UserDto();
         UserEntity userEntity = userRepository.findByUserId(userId);
-        if (userEntity == null) throw new UsernameNotFoundException(userId);
+        if (userEntity == null) throw new UserServiceException("User with " + userId + " not found" );
 
         BeanUtils.copyProperties(userEntity, userToReturn);
 
@@ -91,15 +94,40 @@ public class UserServiceImpl implements UserService {
         UserDto usertoReturn = new UserDto();
         UserEntity userEntity = userRepository.findByUserId(userId);
 
-        if (userEntity == null){
+        if (userEntity == null) {
             throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
-        }else{
+        } else {
             userEntity.setFirstName(user.getFirstName());
             userEntity.setLastName(user.getLastName());
 
-            UserEntity  updatedUserDetails = userRepository.save(userEntity);
+            UserEntity updatedUserDetails = userRepository.save(userEntity);
             BeanUtils.copyProperties(updatedUserDetails, usertoReturn);
         }
-            return usertoReturn;
+        return usertoReturn;
+    }
+
+    @Override
+    public void deleteUser(String userId) {
+        UserEntity userEntity = userRepository.findByUserId(userId);
+
+        if (userEntity == null)
+            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+
+        userRepository.delete(userEntity);
+    }
+
+    @Override
+    public List<UserDto> getUsers(int page, int limit) {
+        List<UserDto> returnValue = new ArrayList<>();
+
+        Pageable pageableRequest = PageRequest.of(page, limit);
+        Page<UserEntity> usersPage =  userRepository.findAll(pageableRequest);
+        List <UserEntity> users = usersPage.getContent();
+        for (UserEntity user: users) {
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties(user, userDto);
+            returnValue.add(userDto);
+        }
+        return returnValue;
     }
 }
