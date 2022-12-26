@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserByUserId(String userId) {
         UserDto userToReturn = new UserDto();
         UserEntity userEntity = userRepository.findByUserId(userId);
-        if (userEntity == null) throw new UserServiceException("User with " + userId + " not found" );
+        if (userEntity == null) throw new UserServiceException("User with " + userId + " not found");
 
         BeanUtils.copyProperties(userEntity, userToReturn);
 
@@ -120,10 +120,12 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getUsers(int page, int limit) {
         List<UserDto> returnValue = new ArrayList<>();
 
+        if (page > 0) page = page - 1;
+
         Pageable pageableRequest = PageRequest.of(page, limit);
-        Page<UserEntity> usersPage =  userRepository.findAll(pageableRequest);
-        List <UserEntity> users = usersPage.getContent();
-        for (UserEntity user: users) {
+        Page<UserEntity> usersPage = userRepository.findAll(pageableRequest);
+        List<UserEntity> users = usersPage.getContent();
+        for (UserEntity user : users) {
             UserDto userDto = new UserDto();
             BeanUtils.copyProperties(user, userDto);
             returnValue.add(userDto);

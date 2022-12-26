@@ -73,7 +73,7 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserRest> getAllUsers(@RequestParam(value = "page", defaultValue = "1") int page,
+    public List<UserRest> getAllUsers(@RequestParam(value = "page", defaultValue = "0") int page,
                                       @RequestParam(value = "limit", defaultValue = "25") int limit){
         List<UserRest> usersToReturn = new ArrayList<>();
         List <UserDto> users = userService.getUsers(page, limit);
